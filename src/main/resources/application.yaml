@@ -12,6 +12,7 @@ spring:
       enabled: true
       lifecycle-management: start_only
 
+
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
