@@ -6,6 +6,7 @@ import com.example.hunters_league.service.dto.UserDTO;
 import com.example.hunters_league.web.vm.UserLoginVM;
 import com.example.hunters_league.web.vm.UserRegisterVM;
 import com.example.hunters_league.web.vm.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,18 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 
 public class AuthController {
 
 
     private final UserMapper userMapper;
     private final AuthService authService;
-
-
-    public AuthController(UserMapper userMapper, AuthService authService) {
-        this.userMapper = userMapper;
-        this.authService = authService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserLoginVM userLoginVM) {

@@ -29,22 +29,37 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
         } catch (UserNotFoundException e) {
-            // Log et retour d'une réponse 404 pour l'utilisateur non trouvé
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } catch (Exception e) {
-            // Log complet de toute autre exception pour diagnostiquer
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
-
-
 
     @GetMapping("/find/{id}")
     public ResponseEntity<UserDTO> find(@PathVariable String id) {
         User user = userService.findById(id);
         UserDTO userDTO = userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<UserDTO> save(@RequestBody UserDTO userDTO) {
+        User savedUser = userService.saveUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(savedUser));
+    }
+
+    @GetMapping("/findByUsername/{username}")
+    public ResponseEntity<UserDTO> findByUser(@PathVariable String username) {
+        User user = userService.findByUser(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return ResponseEntity.ok(userMapper.toDTO(user));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
+        User updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok(userMapper.toDTO(updatedUser));
     }
 }
