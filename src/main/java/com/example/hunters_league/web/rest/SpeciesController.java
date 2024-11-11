@@ -1,13 +1,12 @@
 package com.example.hunters_league.web.rest;
 
-import com.example.hunters_league.repository.SpeciesRepository;
+import com.example.hunters_league.domain.Species;
 import com.example.hunters_league.service.SpeciesService;
 import com.example.hunters_league.service.dto.SpeciesDTO;
-import com.example.hunters_league.web.vm.SpeciesVM;
 import com.example.hunters_league.web.vm.mapper.SpeciesMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,30 +18,41 @@ public class SpeciesController {
 
     private final SpeciesService speciesService;
     private final SpeciesMapper speciesMapper;
-    private final SpeciesRepository speciesRepository;
+
+//    @PostMapping("/delete")
+//    public ResponseEntity<String> delete(@RequestBody SpeciesDeleteVM speciesDeleteVM) {
+//        try {
+//            boolean isDeleted = speciesService.delete(speciesDeleteVM.getId());
+//            if (isDeleted) {
+//                return ResponseEntity.ok("Species deleted");
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Species not found");
+//            }
+//        } catch (SpeciesNotFoundException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Species not found");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+//        }
+//    }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<SpeciesDTO> find(@PathVariable UUID id) {
+        Species species = speciesService.findById(id);
+        SpeciesDTO speciesDTO = speciesMapper.toDTO(species);
+        return ResponseEntity.ok(speciesDTO);
+    }
 
     @PostMapping("/save")
-    public ResponseEntity<SpeciesDTO> save(@RequestBody SpeciesVM speciesVM){
-        SpeciesDTO speciesDTO = speciesMapper.toDTO(speciesMapper.toEntity(speciesVM));
-        return ResponseEntity.ok(speciesService.save(speciesDTO));
+    public ResponseEntity<SpeciesDTO> save(@RequestBody SpeciesDTO speciesDTO) {
+        Species savedSpecies = speciesService.saveSpecies(speciesDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(speciesMapper.toDTO(savedSpecies));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SpeciesDTO> update(@PathVariable UUID id,@RequestBody SpeciesVM speciesVM){
-        SpeciesDTO speciesDTO = speciesMapper.toDTO(speciesMapper.toEntity(speciesVM));
-        return ResponseEntity.ok(speciesService.update(id, speciesDTO));
+    public ResponseEntity<SpeciesDTO> updateSpecies(@PathVariable UUID id, @RequestBody SpeciesDTO speciesDTO) {
+        Species updatedSpecies = speciesService.updateSpecies(id, speciesDTO);
+        return ResponseEntity.ok(speciesMapper.toDTO(updatedSpecies));
     }
-
-    @GetMapping("find/{id}")
-    public ResponseEntity<SpeciesDTO> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok(speciesService.findById(id));
-    }
-
-    @DeleteMapping("deleted/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        speciesService.deleted(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
 }

@@ -4,11 +4,12 @@ import com.example.hunters_league.domain.Species;
 import com.example.hunters_league.repository.SpeciesRepository;
 import com.example.hunters_league.service.SpeciesService;
 import com.example.hunters_league.service.dto.SpeciesDTO;
+import com.example.hunters_league.web.errors.species.SpeciesNotFoundException;
 import com.example.hunters_league.web.vm.mapper.SpeciesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,33 +25,37 @@ public class SpeciesServiceImpl implements SpeciesService {
     }
 
     @Override
-    public SpeciesDTO save(SpeciesDTO speciesDTO){
-        Species species = speciesMapper.toEntity(speciesDTO);
-        Species saveSpecies = speciesRepository.save(species);
-        return speciesMapper.toDTO(saveSpecies);
+    public boolean delete(UUID id) {
+        Species species = speciesRepository.findById(id)
+                .orElseThrow(() -> new SpeciesNotFoundException("Species not found"));
+        speciesRepository.delete(species);
+        return true;
     }
 
     @Override
-    public SpeciesDTO update(UUID id, SpeciesDTO speciesDTO){
-        Species species = speciesRepository.findById(id).orElseThrow(() -> new RuntimeException("Animal not found"));
+    public Species findById(UUID id) {
+        return speciesRepository.findById(id)
+                .orElseThrow(() -> new SpeciesNotFoundException("Species not found"));
+    }
+
+    @Override
+    public Species saveSpecies(SpeciesDTO speciesDTO) {
+        Species species = speciesMapper.toEntity(speciesDTO);
+        return speciesRepository.save(species);
+    }
+
+
+    @Override
+    public Species updateSpecies(UUID id, SpeciesDTO speciesDTO) {
+        Species species = speciesRepository.findById(id)
+                .orElseThrow(() -> new SpeciesNotFoundException("Species not found"));
+
         species.setName(speciesDTO.getName());
         species.setCategory(speciesDTO.getCategory());
         species.setMinimumWeight(speciesDTO.getMinimumWeight());
         species.setDifficulty(speciesDTO.getDifficulty());
         species.setPoints(speciesDTO.getPoints());
-        Species updateSpecies = speciesRepository.save(species);
-        return speciesMapper.toDTO(updateSpecies);
+
+        return speciesRepository.save(species);
     }
-
-    @Override
-    public SpeciesDTO findById(UUID id){
-        Species species = speciesRepository.findById(id).orElseThrow(() -> new RuntimeException("Animal not found"));
-        return speciesMapper.toDTO(species);
-    }
-
-
-    public void deleted(UUID id){
-        speciesRepository.deleteById(id);
-    }
-
 }
