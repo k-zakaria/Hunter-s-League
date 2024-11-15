@@ -2,9 +2,10 @@ package com.example.hunters_league.service;
 
 import com.example.hunters_league.domain.Species;
 import com.example.hunters_league.service.dto.SpeciesDTO;
+import com.example.hunters_league.web.vm.SpeciesVM;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface SpeciesService {
@@ -15,4 +16,6 @@ public interface SpeciesService {
         Species saveSpecies(SpeciesDTO speciesDTO);
 
         Species updateSpecies(UUID id, SpeciesDTO speciesDTO);
+
+        Page<Species> getAllSpecies(Pageable pageable);
 }

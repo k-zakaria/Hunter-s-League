@@ -2,10 +2,15 @@ package com.example.hunters_league.web.rest;
 
 import com.example.hunters_league.domain.Participation;
 import com.example.hunters_league.service.ParticipationService;
+import com.example.hunters_league.service.dto.CompetitionDetailsDTO;
 import com.example.hunters_league.service.dto.ParticipationDTO;
 import com.example.hunters_league.web.errors.participation.ParticipationNotFoundException;
+import com.example.hunters_league.web.response.ResponseHandler;
+import com.example.hunters_league.web.vm.CompetitionVM;
 import com.example.hunters_league.web.vm.ParticipationDeleteVM;
 import com.example.hunters_league.web.vm.ParticipationVM;
+import com.example.hunters_league.web.vm.ScoreUpdateVM;
+import com.example.hunters_league.web.vm.mapper.CompetitionMapper;
 import com.example.hunters_league.web.vm.mapper.ParticipationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +25,7 @@ import java.util.UUID;
 public class ParticipationController {
     private final ParticipationService participationService;
     private final ParticipationMapper participationMapper;
+    private final CompetitionMapper competitionMapper;
 
     @PostMapping("/delete")
     public ResponseEntity<String> delete(@RequestBody ParticipationDeleteVM participationDeleteVM) {
@@ -40,10 +46,10 @@ public class ParticipationController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<ParticipationVM> find(@PathVariable UUID id) {
+    public ResponseEntity<Object> find(@PathVariable UUID id) {
         Participation participation = participationService.findById(id);
         ParticipationVM participationVM = participationMapper.toVM(participation);
-        return ResponseEntity.ok(participationVM);
+        return ResponseHandler.responseBuilder("Reuquested Participation", HttpStatus.OK, participationVM);
     }
 
     @PostMapping("/save")
@@ -57,4 +63,17 @@ public class ParticipationController {
         Participation updatedParticipation = participationService.update(id, participationDTO);
         return ResponseEntity.ok(participationMapper.toVM(updatedParticipation));
     }
+
+    @GetMapping("/{participationId}/competition")
+    public ResponseEntity<CompetitionVM> getCompetitionDetails(@PathVariable UUID participationId) {
+        CompetitionDetailsDTO competitionDetails = participationService.getCompetitionDetailsByParticipant(participationId);
+        return ResponseEntity.ok(competitionMapper.toVM(competitionDetails));
+    }
+
+    @PutMapping("/updateScore")
+    public ResponseEntity<String> updateScore(@RequestBody ScoreUpdateVM scoreUpdateVM) {
+        participationService.updateScore(scoreUpdateVM.getParticipationId(), scoreUpdateVM.getScore());
+        return ResponseEntity.ok("Score updated successfully");
+    }
+
 }

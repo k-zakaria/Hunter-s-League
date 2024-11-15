@@ -9,5 +9,9 @@ import org.mapstruct.Mapper;
 public interface SpeciesMapper {
     Species toEntity(SpeciesVM speciesVM);
     SpeciesDTO toDTO(Species species);
+    SpeciesVM toVM(Species species);
     Species toEntity(SpeciesDTO speciesDTO);
+
+
+
 }
