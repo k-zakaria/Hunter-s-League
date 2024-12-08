@@ -12,8 +12,8 @@ import lombok.*;
 @Builder
 public class SignInVM {
 
-    @NotBlank(message = "username cannot be blank")
-    private String username;
+    @NotBlank(message = "email cannot be blank")
+    private String email;
 
     @NotBlank(message = "password cannot be blank")
     @Size(min = 8, message = "password must be at least 8 characters")

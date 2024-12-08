@@ -73,6 +73,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> runTimeEx(RuntimeException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     // Competition exceptions handler
 
     @ExceptionHandler(CompetitionAlreadyExistException.class)

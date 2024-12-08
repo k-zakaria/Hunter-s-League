@@ -5,10 +5,7 @@ import lombok.*;
 import org.youcode.maska_hunters_league.domain.enums.Role;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -22,12 +19,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     private String firstName;
 
@@ -47,6 +42,11 @@ public class User {
     private List<Participation> participations;
 
     @ManyToMany
-    private Collection<Role> Roles = new ArrayList<>();
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<AppRole> roles = new HashSet<>();
 
 }

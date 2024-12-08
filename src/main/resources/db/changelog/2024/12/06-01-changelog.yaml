@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1733519743443-1
+      author: Youcode (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addPrimaryKey:
+            columnNames: role_id, user_id
+            constraintName: pk_user_roles
+            tableName: user_roles
+  - changeSet:
+      id: 1733519743443-2
+      author: Youcode (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: username
+            constraintName: uc_user_username
+            tableName: user
+

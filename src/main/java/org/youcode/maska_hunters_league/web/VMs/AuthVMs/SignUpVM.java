@@ -37,9 +37,5 @@ public class SignUpVM {
 
     @NotBlank(message = "nationality cannot be blank")
     private String nationality;
-
-    @NotNull(message = "role cannot be null")
-    @EnumValue(enumClass = Role.class, message = "invalid role")
-    private String role;
 }
 
