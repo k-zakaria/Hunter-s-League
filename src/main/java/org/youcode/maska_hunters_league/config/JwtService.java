@@ -6,27 +6,30 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.youcode.maska_hunters_league.domain.entities.User;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
-@Component
-public class JwtService  {
-    public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
+@Service
+public class JwtService{
+    private static final String SECRET = "3F5E7A1D9C8B3E9A57F8C27D9B1A6D3C2B9C6F7E4D1A6E0F0B4A2F8B7A6E1C3F";
 
-    public String extractEmail(String token) {
-        try {
-            String email = extractClaim(token, Claims::getSubject);
-            System.out.println("Email extrait du token : " + email);
-            return email;
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'extraction de l'email : " + e.getMessage());
-            return null;
-        }
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public UUID extractUserId(String token) {
+        return UUID.fromString(extractClaim(token, claims -> claims.get("id", String.class)));
+    }
+
+    public String extractUserRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
 
@@ -39,20 +42,14 @@ public class JwtService  {
         return claimsResolver.apply(claims);
     }
 
+
     private Claims extractAllClaims(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
+        return Jwts.parserBuilder()
                     .setSigningKey(getSignKey())
                     .setAllowedClockSkewSeconds(60)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            System.out.println("Claims extraits : " + claims);
-            return claims;
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'extraction des claims : " + e.getMessage());
-            throw e;
-        }
     }
 
 
@@ -61,22 +58,32 @@ public class JwtService  {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(),userDetails);
     }
 
-    public String generateToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private String createToken(Map<String, Object> claims, String email) {
+    public String generateToken(Map<String, Object> claims, UserDetails userDetails ) {
+        UUID userId = ((User) userDetails).getId();
+
+        String role = userDetails.getAuthorities().stream()
+                .map(Object::toString)
+                .filter(authority -> authority.startsWith("ROLE_"))
+                .findFirst()
+                .orElse("");
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
+                .setSubject(userDetails.getUsername())
+                .claim("id", userId.toString())
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
