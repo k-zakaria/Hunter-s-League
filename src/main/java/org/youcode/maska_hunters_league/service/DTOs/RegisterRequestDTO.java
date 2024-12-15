@@ -1,4 +1,4 @@
-package org.youcode.maska_hunters_league.web.VMs.AuthVMs;
+package org.youcode.maska_hunters_league.service.DTOs;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import org.youcode.maska_hunters_league.validation.EnumValue;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SignUpVM {
+public class RegisterRequestDTO {
     @NotBlank(message = "username cannot be blank")
     private String username;
 
@@ -37,5 +37,9 @@ public class SignUpVM {
 
     @NotBlank(message = "nationality cannot be blank")
     private String nationality;
-}
 
+    @NotNull(message = "role cannot be null")
+    @EnumValue(enumClass = Role.class, message = "invalid role")
+    private String role;
+
+}

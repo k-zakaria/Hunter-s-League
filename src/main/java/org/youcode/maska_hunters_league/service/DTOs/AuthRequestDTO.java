@@ -1,4 +1,4 @@
-package org.youcode.maska_hunters_league.web.VMs.AuthVMs;
+package org.youcode.maska_hunters_league.service.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -7,12 +7,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class SignInVM {
+public class AuthRequestDTO {
 
-    @NotBlank(message = "email cannot be blank")
+    @NotBlank(message = "username cannot be blank")
     private String email;
 
     @NotBlank(message = "password cannot be blank")

@@ -1,4 +1,10 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/capps
+          jwt-ser-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   jpa:
     properties:
@@ -12,8 +18,6 @@ spring:
     enabled: true
     change-log: db/changelog/master.yaml
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
 
   docker:
@@ -21,3 +25,12 @@ spring:
       file: src/main/docker/compose.yaml
       enabled: true
       lifecycle-management: start_only
+
+server:
+  ssl:
+    enabled: true
+    key-store: classpath:mykeystore.p12
+    key-store-type: PKCS12
+    key-store-password: mypassword
+
+  port: 8081

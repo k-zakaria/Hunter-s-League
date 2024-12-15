@@ -1,4 +1,4 @@
-package org.youcode.maska_hunters_league.web.VMs.AuthVMs;
+package org.youcode.maska_hunters_league.service.DTOs;
 
 import lombok.*;
 
@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JwtResponseVM {
+public class JwtResponseDTO {
     private String accessToken;
 }
