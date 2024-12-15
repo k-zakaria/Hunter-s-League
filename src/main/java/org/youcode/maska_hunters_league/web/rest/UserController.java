@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.youcode.maska_hunters_league.domain.entities.User;
@@ -31,7 +32,9 @@ public class UserController {
     private final UpdateUserVMMapper updateUserVMMapper;
 
 
+
     @GetMapping
+    @PreAuthorize("hasRole('client_admin')")
     public ResponseEntity<Page<UserVM>> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Page<User> users = userService.getAllUsersPaginated(page, size);
         List<UserVM> userVMS = users.stream().map(userVMMapper::toUserVM).toList();

@@ -34,3 +34,9 @@ server:
     key-store-password: mypassword
 
   port: 8081
+
+jwt:
+  auth:
+    converter:
+      resource-id: capps-rest-api
+      principle-attribute: preferred_username

@@ -1,5 +1,6 @@
 package org.youcode.maska_hunters_league.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,8 +21,10 @@ import static org.youcode.maska_hunters_league.domain.enums.Role.JURY;
 @Configuration
 @EnableWebSecurity(debug = true)
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityOAuth2Config {
 
+    private final JwtAuthConverter jwtAuthConverter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,7 +38,7 @@ public class SecurityOAuth2Config {
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
