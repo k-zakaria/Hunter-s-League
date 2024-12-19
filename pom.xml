@@ -30,9 +30,10 @@
         <java.version>17</java.version>
         <sonar.login>sqp_b65f21610da66e6f8fb5dc9a2f186de2a44d5d14</sonar.login>
         <sonar.projectKey>hunters_league</sonar.projectKey>
-        <sonar.pojectName>hunters_league</sonar.pojectName>
+        <sonar.projectName>hunters_league</sonar.projectName>
         <sonar.host.url>http://localhost:9000/</sonar.host.url>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
