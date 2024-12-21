@@ -6,8 +6,9 @@ pipeline {
     SONARQUBE_TOKEN = 'squ_87824bb1cc87aac66f9ae2f6d4633b9d53405797'
     SONAR_PROJECT_KEY = "maska_hunters_league"
   }
-  stage('Install Tools') {
-              steps {
+  stages {
+    stage('Install Tools') {
+             steps {
                   sh '''
                   apt-get update && apt-get install -y jq apt-transport-https ca-certificates curl gnupg-agent software-properties-common
                   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -15,7 +16,7 @@ pipeline {
                   apt-get update && apt-get install -y docker-ce-cli
                   '''
               }
-          }
+    }
 
           stage('Checkout Code') {
               steps {
