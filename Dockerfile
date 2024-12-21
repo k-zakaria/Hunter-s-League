@@ -1,27 +1,35 @@
-# Use a specific version tag for the base image to ensure consistency
-FROM openjdk:17-jdk-slim AS build
+# Étape 1 : Construction
+FROM eclipse-temurin:17-jdk-alpine as build
 
-# Set the working directory
+WORKDIR /workspace/app
+
+# Copie des fichiers nécessaires pour Maven Wrapper
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+# Construction du projet avec Maven, en évitant les tests pour accélérer le processus
+RUN ./mvnw install -DskipTests
+
+# Extraction des dépendances de l'archive JAR générée
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+# Étape 2 : Exécution
+FROM eclipse-temurin:17-jre-alpine
+
 WORKDIR /app
 
-# Optionally, if you have a specific JAR name, replace 'your-app.jar' with it
-ARG JAR_FILE=target/maska_hunters_league.jar
+# Définir un argument pour le port et une variable d'environnement
+ARG PORT=8080
+ENV PORT=${PORT}
 
-# Copy the JAR file into the container
-COPY ${JAR_FILE} app.jar
+# Copier les fichiers nécessaires depuis l'étape de build
+COPY --from=build /workspace/app/target/dependency/ /app/lib/
+COPY --from=build /workspace/app/target/*.jar /app/app.jar
 
-# Create a non-root user to run the application
-RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
+# Exposer le port pour l'application
+EXPOSE ${PORT}
 
-# Change ownership of the application directory
-RUN chown -R appuser:appgroup /app
-
-# Switch to the non-root user
-USER appuser
-
-# Define the entrypoint
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
-# Optional: Add a health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+# Commande d'exécution par défaut
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

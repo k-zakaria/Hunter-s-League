@@ -4,7 +4,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/capps
-          jwt-ser-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+          jwks-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   jpa:
     properties:
@@ -13,12 +13,9 @@ spring:
         hbm2ddl:
           auto: update
 
-
   liquibase:
     enabled: true
     change-log: db/changelog/master.yaml
-
-
 
   docker:
     compose:
@@ -32,5 +29,4 @@ server:
     key-store: classpath:mykeystore.p12
     key-store-type: PKCS12
     key-store-password: mypassword
-
   port: 8081
