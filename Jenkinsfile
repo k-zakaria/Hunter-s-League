@@ -5,6 +5,7 @@ pipeline {
     SONARQUBE_URL = 'http://sonarqube:9000'
     SONARQUBE_TOKEN = 'squ_87824bb1cc87aac66f9ae2f6d4633b9d53405797'
     SONAR_PROJECT_KEY = "maska_hunters_league"
+    EMAIL_RECIPIENT = 'kacimizakaria28@gmail.com'
   }
   stages {
     stage('Build') {
@@ -59,12 +60,28 @@ pipeline {
       }
     }
   }
-  post {
-    success {
-      echo 'Pipeline completed successfully! 🎉'
-    }
-    failure {
-      echo 'Pipeline failed. Check the logs for details. 🚨'
-    }
-  }
+   post {
+          success {
+              script {
+                  def message = """
+                  The Jenkins pipeline for ${env.JOB_NAME} #${env.BUILD_NUMBER} completed successfully.
+                  URL: ${env.BUILD_URL}
+                  """
+                  sh """
+                      echo "$message" | mail -s "Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}" ${EMAIL_RECIPIENT}
+                  """
+              }
+          }
+          failure {
+              script {
+                  def message = """
+                  The Jenkins pipeline for ${env.JOB_NAME} #${env.BUILD_NUMBER} failed.
+                  URL: ${env.BUILD_URL}
+                  """
+                  sh """
+                      echo "$message" | mail -s "Pipeline Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}" ${EMAIL_RECIPIENT}
+                  """
+              }
+          }
+      }
 }
