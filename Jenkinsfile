@@ -7,28 +7,12 @@ pipeline {
     SONAR_PROJECT_KEY = "maska_hunters_league"
   }
   stages {
-    stage('Install Tools') {
-             stage('Validate Environment') {
-                   steps {
-                     echo 'Validating environment variables...'
-                     sh '''
-                       echo "SonarQube URL: $SONARQUBE_URL"
-                       echo "Sonar Project Key: $SONAR_PROJECT_KEY"
-                     '''
-                   }
-                 }
-                 stage('Test Dependencies') {
-                   steps {
-                     echo 'Testing Maven dependencies...'
-                     sh 'mvn dependency:tree'
-                   }
-                 }
-                 stage('Build') {
-                   steps {
-                     echo 'Building the project...'
-                     sh 'mvn clean install -X'
-                   }
-                 }
+    stage('Build') {
+      steps {
+        echo 'Building the project...'
+        sh 'mvn clean install -X'
+      }
+    }
     stage('SonarQube Scan') {
       steps {
         echo 'Running SonarQube analysis...'
