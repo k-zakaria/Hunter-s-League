@@ -6,7 +6,6 @@ pipeline {
     SONARQUBE_TOKEN = 'squ_87824bb1cc87aac66f9ae2f6d4633b9d53405797'
     SONAR_PROJECT_KEY = "maska_hunters_league"
   }
-
   stages {
     stage('Build') {
       steps {
@@ -15,7 +14,6 @@ pipeline {
         sh 'mvn clean install'
       }
     }
-
     stage('SonarQube Scan') {
       steps {
         echo 'Running SonarQube analysis...'
@@ -29,7 +27,6 @@ pipeline {
         }
       }
     }
-
     stage('Quality Gate Check') {
       steps {
         script {
@@ -47,14 +44,12 @@ pipeline {
         }
       }
     }
-
     stage('Build Docker Image') {
       steps {
         echo "Building Docker Image..."
         sh 'docker build -t springboot-app .'
       }
     }
-
     stage('Deploy Docker Container') {
       steps {
         sh """
