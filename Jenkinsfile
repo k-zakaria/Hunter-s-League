@@ -6,14 +6,33 @@ pipeline {
     SONARQUBE_TOKEN = 'squ_87824bb1cc87aac66f9ae2f6d4633b9d53405797'
     SONAR_PROJECT_KEY = "maska_hunters_league"
   }
-  stages {
-    stage('Build') {
-      steps {
-        echo 'Building the project...'
-        // Run Maven without specifying the pom.xml file path if it's in the root of the workspace
-        sh 'mvn clean install'
-      }
-    }
+  stage('Install Tools') {
+              steps {
+                  sh '''
+                  apt-get update && apt-get install -y jq apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+                  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+                  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+                  apt-get update && apt-get install -y docker-ce-cli
+                  '''
+              }
+          }
+
+          stage('Checkout Code') {
+              steps {
+                  checkout([$class: 'GitSCM',
+                            branches: [[name: '*/master']],
+                            userRemoteConfigs: [[
+                                url: 'https://github.com/k-zakaria/Hunter-s-League'
+                            ]]
+                  ])
+              }
+          }
+
+          stage('Debug Workspace') {
+              steps {
+                  sh 'ls -R'
+              }
+          }
     stage('SonarQube Scan') {
       steps {
         echo 'Running SonarQube analysis...'
@@ -60,7 +79,6 @@ pipeline {
       }
     }
   }
-
   post {
     success {
       echo 'Pipeline completed successfully! 🎉'
