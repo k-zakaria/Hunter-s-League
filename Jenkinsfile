@@ -8,32 +8,27 @@ pipeline {
   }
   stages {
     stage('Install Tools') {
-             steps {
-                  sh '''
-                  apt-get update && apt-get install -y jq apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-                  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-                  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-                  apt-get update && apt-get install -y docker-ce-cli
-                  '''
-              }
-    }
-
-          stage('Checkout Code') {
-              steps {
-                  checkout([$class: 'GitSCM',
-                            branches: [[name: '*/master']],
-                            userRemoteConfigs: [[
-                                url: 'https://github.com/k-zakaria/Hunter-s-League'
-                            ]]
-                  ])
-              }
-          }
-
-          stage('Debug Workspace') {
-              steps {
-                  sh 'ls -R'
-              }
-          }
+             stage('Validate Environment') {
+                   steps {
+                     echo 'Validating environment variables...'
+                     sh '''
+                       echo "SonarQube URL: $SONARQUBE_URL"
+                       echo "Sonar Project Key: $SONAR_PROJECT_KEY"
+                     '''
+                   }
+                 }
+                 stage('Test Dependencies') {
+                   steps {
+                     echo 'Testing Maven dependencies...'
+                     sh 'mvn dependency:tree'
+                   }
+                 }
+                 stage('Build') {
+                   steps {
+                     echo 'Building the project...'
+                     sh 'mvn clean install -X'
+                   }
+                 }
     stage('SonarQube Scan') {
       steps {
         echo 'Running SonarQube analysis...'
